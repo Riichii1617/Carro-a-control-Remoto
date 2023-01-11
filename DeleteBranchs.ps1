@@ -1,5 +1,5 @@
 # Obtener lista de ramas locales
-$branches = (git branch --merged | Where-Object { $_ -notlike "*" } | Where-Object { $_ -notlike "master" } | Where-Object { $_ -notlike "develop" }).Trim()
+$branches = (git branch --merged).Trim()
 
 #Validar si existen ramas
 if ($branches) {
@@ -8,10 +8,14 @@ if ($branches) {
 
     # Eliminar ramas seleccionadas
     foreach ($branch in $branchesToDelete) {
-        git branch -D $branch
+        #condicional para no eliminar ramas master y release
+        if($branch -ne "* master" -and $branch -ne "release"){
+            git branch -D $branch
+            Write-Host "Rama $branch eliminada"
+        }else{
+            Write-Host "No es posible eliminar la rama $branch"
+        }
     }
-
-    Write-Host "Ramas eliminadas correctamente"
 }else{
     Write-Host "No hay ramas para eliminar"
 }
